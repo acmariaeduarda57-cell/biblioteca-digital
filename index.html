@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Biblioteca digital para gestionar catálogo, préstamos y ajustes.">
+    <title>Biblioteca Digital</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Biblioteca Digital</h1>
+        <nav id="menu-principal">
+            <button class="nav-btn active" data-view="catalogo">Catálogo</button>
+            <button class="nav-btn" data-view="prestamos">Mis préstamos (<span id="contador-prestamos">0</span>)</button>
+            <button class="nav-btn" data-view="formulario">Agregar Libro</button>
+            <button class="nav-btn" data-view="resumen">Resumen</button>
+        </nav>
+        <div class="acciones-header">
+            <span id="saludo-usuario" class="saludo-oculto"></span>
+            <button id="btn-tema" aria-label="Cambiar tema">🌙</button>
+        </div>
+        
+    </header>
+
+    <main>
+        <!-- VISTA 1: CATÁLOGO -->
+        <section id="vista-catalogo" class="vista activa">
+            <div class="controles">
+                <input type="text" id="busqueda" placeholder="Buscar por título o autor..." aria-label="Buscar libros">
+                <div class="filtros">
+                    <button class="filtro-btn active" data-filtro="todos">Todos</button>
+
+                    <button class="filtro-btn" data-filtro="disponibles">Disponibles</button>
+                    <button class="filtro-btn" data-filtro="prestados">Prestados</button>
+                </div>
+                <select id="filtro-genero" aria-label="Filtrar por género">
+                    <option value="todos">Todos los géneros</option>
+                </select>
+                <select id="ordenar-por" aria-label="Ordenar por">
+                    <option value="titulo">Título</option>
+                    <option value="autor">Autor</option>
+                    <option value="anio">Año</option>
+                </select>
+                <button id="btn-orden" data-orden="asc">Ascendente</button>
+            </div>
+
+            <p id="contador-libros">Mostrando 0 de 0 libros</p>
+            <div id="lista-libros" class="grid-libros"></div>
+        </section>
+
+        <!-- VISTA 2: MIS PRÉSTAMOS -->
+        <section id="vista-prestamos" class="vista">
+            <h2>Préstamos Activos</h2>
+            <div id="lista-prestamos-activos"></div>
+            <p id="mensaje-prestamos" class="mensaje oculto"></p>
+            
+            <h2>Historial de Préstamos</h2>
+            <div id="lista-historial"></div>
+            <p id="mensaje-historial" class="mensaje oculto"></p>
+        </section>
+
+        <!-- VISTA 3: AGREGAR/EDITAR LIBRO 
+
+-->
+        <section id="vista-formulario" class="vista">
+            <h2 id="titulo-formulario">Agregar Nuevo Libro</h2>
+            <form id="form-libro" novalidate>
+                <input type="hidden" id="libro-id" value="">
+                <div class="campo">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo">
+                    <span class="error" id="error-titulo"></span>
+                </div>
+                <div class="campo">
+                    <label for="autor">Autor</label>
+                    <input type="text" id="autor" name="autor">
+                    <span class="error" id="error-autor"></span>
+                </div>
+
+                <div class="campo">
+                    <label for="anio">Año</label>
+                    <input type="number" id="anio" name="anio">
+                    <span class="error" id="error-anio"></span>
+                </div>
+                <div class="campo">
+                    <label for="genero">Género</label>
+                    <select id="genero" name="genero">
+                        <option value="">Seleccione...</option>
+                        <option value="Novela">Novela</option>
+                        <option value="Ciencia">Ciencia</option>
+                        <option value="Historia">Historia</option>
+                        <option value="Ficción">Ficción</option>
+                        <option 
+
+value="Poesía">Poesía</option>
+                    </select>
+                    <span class="error" id="error-genero"></span>
+                </div>
+                <div class="campo">
+                    <label for="comentario">Comentario (máx. 120)</label>
+                    <textarea id="comentario" name="comentario" maxlength="120"></textarea>
+                    <span id="contador-comentario">120 restantes</span>
+                </div>
+                <div class="campo checkbox">
+                    <label for="coleccion">Ejemplar de colección</label>
+                    <input type="checkbox" id="coleccion" name="coleccion">
+                    <span class="error" id="error-coleccion"></span>
+
+                </div>
+                
+                <p id="mensaje-exito-form" class="mensaje exito oculto"></p>
+                
+                <div class="acciones-form">
+                    <button type="submit" id="btn-submit">Agregar Libro</button>
+                    <button type="button" id="btn-cancelar-edicion" class="oculto">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- VISTA 4: RESUMEN Y AJUSTES -->
+        <section id="vista-resumen" class="vista">
+            <h2>Resumen de la Biblioteca</h2>
+            <div class="resumen-grid">
+                <div class="resumen-card"><h3>Total Libros</h3><p id="res-total">0</p></div>
+                <div class="resumen-card"><h3>Disponibles</h3><p id="res-disponibles">0</p></div>
+                <div class="resumen-card"><h3>Prestados</h3><p id="res-prestados">0</p></div>
+                <div class="resumen-card"><h3>Vencidos</h3><p id="res-vencidos">0</p></div>
+            </div>
+            <h3>Libros por Género</h3>
+            <ul id="res-generos"></ul>
+
+            <h2>Ajustes</h2>
+            <div class="ajustes">
+                <div class="campo">
+                    <label for="nombre-usuario">Tu Nombre</label>
+                    <input type="text" id="nombre-usuario" placeholder="Ej. Ana">
+                </div>
+
+                <button id="btn-restablecer" class="peligro">Restablecer Biblioteca</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL PRÉSTAMO -->
+    <div id="modal-prestamo" class="modal oculto">
+        <div class="modal-content">
+            <h2>Prestar Libro</h2>
+            <p id="modal-prestamo-libro"></p>
+            <div class="campo">
+                <label for="input-persona">Nombre de la persona</label>
+                <input type="text" id="input-persona">
+                <span class="error" id="error-persona"></span>
+            </div>
+            <div class="modal-acciones">
+
+                <button id="btn-confirmar-prestamo">Confirmar</button>
+                <button id="btn-cancelar-prestamo" class="secundario">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ELIMINAR -->
+    <div id="modal-eliminar" class="modal oculto">
+        <div class="modal-content">
+            <h2>Confirmar Eliminación</h2>
+            <p id="modal-eliminar-texto"></p>
+            <div class="modal-acciones">
+                <button id="btn-confirmar-eliminar" class="peligro">Eliminar</button>
+                <button id="btn-cancelar-eliminar" class="secundario">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+
+</body>
+</html>
